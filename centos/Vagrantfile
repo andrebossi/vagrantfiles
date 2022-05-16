@@ -1,0 +1,31 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "generic/centos8"
+  config.vm.box_version = "3.6.14"
+  # config.vm.box_check_update = false
+
+  # config.vm.network "forwarded_port", guest: 80, host: 8080
+  # config.vm.network "forwarded_port", guest: 80, host: 8080, host_ip: "127.0.0.1"
+  # config.vm.network "private_network", ip: "192.168.33.10"
+  config.vm.network "public_network", ip: "192.168.0.234", bridge: "Qualcomm QCA61x4A 802.11ac Wireless Adapter"
+  # config.vm.synced_folder "../data", "/vagrant_data"
+
+  unless Vagrant.has_plugin?("vagrant-disksize")
+    raise  Vagrant::Errors::VagrantError.new, "vagrant-disksize plugin is missing. Please install it using 'vagrant plugin install vagrant-disksize' and rerun 'vagrant up'"
+  end
+
+  config.disksize.size = '8GB'
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.gui = false
+    vb.memory = "1024"
+    vb.cpus = 2
+  end
+  
+  config.vm.provision "shell", inline: <<-SHELL
+    yum install -y zabbix-agent
+    useradd -s /bin/bash -p $(perl -e 'print crypt($ARGV[0], "password")' 'test') -m -N -G adm,vagrant,wheel test
+  SHELL
+end
