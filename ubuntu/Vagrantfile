@@ -25,8 +25,7 @@ Vagrant.configure("2") do |config|
   end
   
   config.vm.provision "shell", inline: <<-SHELL
-    apt-get update
-    apt-get install -yq zabbix-agent
+    echo "root:test" | chpasswd
     useradd -s /bin/bash -p $(perl -e 'print crypt($ARGV[0], "password")' 'test') -m -N -G adm,vagrant,sudo test
   SHELL
 end
