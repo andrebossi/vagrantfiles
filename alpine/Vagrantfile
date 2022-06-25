@@ -3,11 +3,15 @@
 
 Vagrant.configure("2") do |config|
   config.vm.box = "generic/alpine316"
-  config.vm.network "public_network"
+  config.vm.network "public_network", bridge: "Qualcomm QCA61x4A 802.11ac Wireless Adapter"
 
   config.vm.synced_folder "C:\\Users\\TBS\\O2B", "/vagrant_data"
 
+  config.vm.disk :disk, type: "vmdk", primary: true
+  config.vm.disk :disk, size: "100GB", primary: true
+
   config.vm.provider "virtualbox" do |vb|
+    vb.name = "alpinesrv"
     vb.gui = false
     vb.cpus = 2
     vb.memory = "2048"
