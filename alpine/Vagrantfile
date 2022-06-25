@@ -1,0 +1,26 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "generic/alpine316"
+  config.vm.network "public_network"
+
+  config.vm.synced_folder "C:\\Users\\TBS\\O2B", "/vagrant_data"
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.gui = false
+    vb.cpus = 2
+    vb.memory = "2048"
+    vb.customize ["modifyvm", :id, "--paravirtprovider", "kvm"]
+  end
+
+  config.vm.provision "shell", inline: <<-SHELL
+    apk update --no-cache && apk add --no-cache docker tzdata
+    cp /usr/share/zoneinfo/America/Sao_Paulo /etc/localtime
+    curl -L "https://github.com/docker/compose/releases/download/v2.6.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+    chmod +x /usr/local/bin/docker-compose
+    rc-update add docker boot
+    service docker start
+    addgroup vagrant docker
+  SHELL
+end
